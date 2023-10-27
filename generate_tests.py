@@ -120,7 +120,7 @@ if __name__ == "__main__":
         module = __import__(module_name)
         functions = [x for x in dir(module) if not x.startswith('__') and callable(getattr(module, x))]
     except:
-        print("ERROR: Invalid input file. Could not correctly import module.")
+        print("ERROR: Could not correctly import module. Please copy the input file to the same directory as this script.")
         sys.exit(1)
 
     f = open("test_.py", "w")
