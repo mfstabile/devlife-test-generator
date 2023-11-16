@@ -33,12 +33,15 @@ There are a few restrictions on the functions code that must be obeyed.
 Example:
 
 ```python
-def encontra_linha_e_coluna(tabuleiro: list, numero: int, cor: str) -> list:
-    """basico"""
-    for i_linha in range(len(tabuleiro)):
-        for i_coluna in range(len(tabuleiro[i_linha])):
-            if tabuleiro[i_linha][i_coluna] == {'numero': numero, 'cor': cor}:
-                return [i_linha, i_coluna]
+def find_line_and_column(board: list, number: int, color: str) -> list:
+    """basico
+    color must be one of the following: "blue", "red", "green".
+    number must be an integer between 1 and 6.
+    """
+    for i_line in range(len(board)):
+        for i_column in range(len(board[i_line])):
+            if board[i_line][i_column] == {'number': number, 'color': color}:
+                return [i_line, i_column]
     return [-1, -1]
 ```
 
