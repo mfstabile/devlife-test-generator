@@ -7,7 +7,9 @@ When you are first running the project, install the dependencies with:
 
     $ pip install -r requirements.txt
 
-Then, to execute the project, run:
+### Generate the tests
+
+To generate the tests file, run:
 
     $ python generate_tests.py <input_file>
 
@@ -22,6 +24,14 @@ There are two optional arguments. The first one enables the GPT model to automat
 If not passed, the default value for the number of scenarios is 5.
 
 *The tests will be generated in the `tests_.py` file. This file will be overwritten if it already exists.*
+
+### Generate the statements
+
+To generate the statements files, run:
+
+    $ python generate_statements.py <input_file> <test_name>
+
+*The statements will be generated in the `<test_name>` folder, one file per difficulty level. These files will be overwritten if they already exist.*
 
 ## Structure of the code
 

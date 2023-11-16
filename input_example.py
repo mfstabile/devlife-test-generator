@@ -10,7 +10,7 @@ def find_line_and_column(board: list, number: int, color: str) -> list:
     return [-1, -1]
 
 def create_slots(n: int) -> list:
-    """proficiente"""
+    """basico"""
     colores = ['amarelo', 'azul', 'preto', 'rosa', 'verde', 'vermelho']
     slot = []
     for number in range(1, n + 1):

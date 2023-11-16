@@ -2,14 +2,9 @@ import sys
 import inspect
 from gpt_caller import GPTCaller
 import traceback
-import ast
 import random
-from random_call_visitor import RandomCallVisitor
 from copy import deepcopy
-
-def write_to_file(input_file, output_stream):
-    content = open(input_file, "r").read()
-    output_stream.write(content)
+from utils import *
 
 def fill_function_works(func_name, output_stream, random_seed=-1):
     content = open("snippets/funcao_funciona.py", "r").read()
@@ -122,26 +117,6 @@ def fill_test(func_name, output_stream, tests):
     content = content.replace("<tests>", tests)
 
     output_stream.write(content)
-
-def get_function_names_in_order_of_appearence(module_name):
-
-    this_source = inspect.getsource(module_name)
-    tree = ast.parse(this_source)
-    functions = []
-    
-    for elem in tree.body:
-        if type(elem) is ast.FunctionDef:
-            this_func_name = elem.name
-            functions.append(this_func_name)
-            
-    return functions
-
-def check_random_calls_in_function(func):
-    source = inspect.getsource(func)
-    tree = ast.parse(source)
-    visitor = RandomCallVisitor()
-    visitor.visit(tree)
-    return visitor.found_random_call
 
 if __name__ == "__main__":
 
