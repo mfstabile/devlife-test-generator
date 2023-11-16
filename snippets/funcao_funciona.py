@@ -12,15 +12,16 @@ def assert_<func_name>_funciona(<parameters>, esperado, exemplo = ""):
 
     marcador = '\n' + '*' * 50 + '\n'
     msg = marcador
-    msg += f'Algo deu errado{exemplo}!! Para os argumentos, <parameter_input>.\nEra esperado = {esperado}. '
-
+    msg += f'Algo deu errado{exemplo}!! Para os argumentos, <parameter_input>.\nEra esperado = <expected_text>. '
+    <random_text>
     try:
         obtido = funcoes.<func_name>(<params_call>)
     except Exception as e:
         msg += f'Para o cenário acima, o seu código apresentou o seguinte erro: \n\n{type(e).__name__}: {e}\n'
         assert False, msg + marcador
 
-    msg += f'Porém, foi obtido {obtido}.'
+    msg += f'Porém, foi obtido <received_text>.'
 
-    assert isinstance(obtido, <response_type>), f'Era esperado que a função retornasse <response_type_text>.\n{msg}'
+    assert isinstance(obtido, <response_type>), f'{msg}\nEra esperado que a função retornasse uma lista.' + marcador
     assert obtido == esperado, msg + marcador
+

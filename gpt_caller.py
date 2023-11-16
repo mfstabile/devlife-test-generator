@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 
 class GPTCaller:
     def __init__(self):
+        self.model = "gpt-3.5-turbo"
         load_dotenv()
         api_key = os.getenv("OPENAI_API_KEY")
         if api_key is None:
@@ -12,10 +13,10 @@ class GPTCaller:
 
     def get_tests(self, amount, function):
         response = openai.ChatCompletion.create(
-    model="gpt-3.5-turbo",
+    model=self.model,
     messages=[
-        {"role": "system", "content": "You are a code generator. You only create valid python code."},
-        {"role": "user", "content": """Generate 5 tests for the following code:
+        {"role": "system", "content": "You are a code generator. You only create valid python code. Generate test cases in a concise list format without any explanations or additional comments."},
+        {"role": "user", "content": """Generate 5 tests in a simple list format similar to this: [('input1',), ('input2',), ...]. Please do not include any explanations or comments for the following code:
 def gera_posicoes(linha, coluna, orientacao, nome):
     navios = {
         'porta-aviões': 4,
@@ -40,7 +41,7 @@ def gera_posicoes(linha, coluna, orientacao, nome):
             (1, 1, 'vertical', 'submarino'),
 ]
 """},
-        {"role": "user", "content": f"""Generate {amount} tests for the following code:
+        {"role": "user", "content": f"""Generate {amount} tests in a simple list format similar to this: [('input1',), ('input2',), ...]. Please do not include any explanations or comments for the following code:
 {function}
 """}
     ],)

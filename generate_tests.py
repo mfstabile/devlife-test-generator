@@ -2,12 +2,16 @@ import sys
 import inspect
 from gpt_caller import GPTCaller
 import traceback
+import ast
+import random
+from random_call_visitor import RandomCallVisitor
+from copy import deepcopy
 
 def write_to_file(input_file, output_stream):
     content = open(input_file, "r").read()
     output_stream.write(content)
 
-def fill_function_works(func_name, output_stream):
+def fill_function_works(func_name, output_stream, random_seed=-1):
     content = open("snippets/funcao_funciona.py", "r").read()
     content = content.replace("<func_name>", func_name)
     function = (getattr(module, func_name))
@@ -24,9 +28,20 @@ def fill_function_works(func_name, output_stream):
 
     types_dict = function.__annotations__
 
+    if random_seed != -1:
+        content = content.replace("<random_text>", f"\n    random.seed({random_seed})")
+    else:
+        content = content.replace("<random_text>", "")
+
     try:
         return_type = types_dict.get("return").__name__
         content = content.replace("<response_type>", str(return_type))
+        if return_type == "str":
+            content = content.replace("<expected_text>", '"{esperado}"')
+            content = content.replace("<received_text>", '"{obtido}"')
+        else:
+            content = content.replace("<expected_text>", "{esperado}")
+            content = content.replace("<received_text>", '{obtido}')
 
         response_type_text_dict = {
             "list": "uma lista",
@@ -42,14 +57,19 @@ def fill_function_works(func_name, output_stream):
     
     try:
         params_call = ""
-        parameters_list = parameters_str.split(", ")
-        parameters_list = [x.split(":") for x in parameters_list]
-        for parameter in parameters_list:
-            if parameter[1] == "list" or parameter[1] == "dict":
-                params_call += f"deepcopy({parameter[0]}), "
-            else:
-                params_call += f"{parameter[0]}, "
-        params_call = params_call[:-2]
+        if parameters_str != "":
+            parameters_list = parameters_str.split(", ")
+            parameters_list = [x.split(":") for x in parameters_list]
+            for parameter in parameters_list:
+                if parameter[1] == "list" or parameter[1] == "dict":
+                    params_call += f"deepcopy({parameter[0]}), "
+                else:
+                    params_call += f"{parameter[0]}, "
+            params_call = params_call[:-2]
+        else:
+            print("WARNING: Function " + func_name + " has no parameters. This may lead to unexpected behavior.")
+            params_call = ""
+            parameters_list = []
         content = content.replace("<params_call>", params_call)
 
         parameter_input = ""
@@ -58,8 +78,9 @@ def fill_function_works(func_name, output_stream):
                 parameter_input += f'{parameter[0]}: \\n{ {parameter[0]} }, '
             else:
                 parameter_input += f'{parameter[0]}: { {parameter[0]} }, '
-        parameter_input = parameter_input.replace("'", "")
-        parameter_input = parameter_input[:-2]
+        if parameter_input != "":
+            parameter_input = parameter_input.replace("'", "")
+            parameter_input = parameter_input[:-2]
         content = content.replace("<parameter_input>", parameter_input)
     except:
         raise Exception("ERROR: Could not generate params call for function " + func_name + ". Check if the parameters are correctly typed.")
@@ -102,6 +123,26 @@ def fill_test(func_name, output_stream, tests):
 
     output_stream.write(content)
 
+def get_function_names_in_order_of_appearence(module_name):
+
+    this_source = inspect.getsource(module_name)
+    tree = ast.parse(this_source)
+    functions = []
+    
+    for elem in tree.body:
+        if type(elem) is ast.FunctionDef:
+            this_func_name = elem.name
+            functions.append(this_func_name)
+            
+    return functions
+
+def check_random_calls_in_function(func):
+    source = inspect.getsource(func)
+    tree = ast.parse(source)
+    visitor = RandomCallVisitor()
+    visitor.visit(tree)
+    return visitor.found_random_call
+
 if __name__ == "__main__":
 
     if len(sys.argv) < 2 or len(sys.argv) > 4:
@@ -118,15 +159,19 @@ if __name__ == "__main__":
     try:
         module_name = sys.argv[1].replace('.py', '')
         module = __import__(module_name)
-        functions = [x for x in dir(module) if not x.startswith('__') and callable(getattr(module, x))]
-    except:
-        print("ERROR: Could not correctly import module. Please copy the input file to the same directory as this script.")
+        functions = get_function_names_in_order_of_appearence(module)
+        
+    except Exception as e:
+        print(f"ERROR: Could not correctly import module. Please copy the input file to the same directory as this script. \n{e}")
         sys.exit(1)
 
     f = open("test_.py", "w")
     write_to_file("snippets/imports.py", f)
     
+    random_calls = []
     for function in functions:
+        if check_random_calls_in_function(getattr(module, function)):
+            random_calls.append(function)
         f.write(f'''try:
     if funcoes:
         from funcoes import {function}
@@ -135,19 +180,22 @@ except:
 ''')
     f.write("\nPWD = Path(__file__).parent\n")
     f.write("program = PWD / 'programa.py'\n")
-    
     write_to_file("snippets/funcoes_proibidas.py", f)
 
     if gptfill:
         gpt = GPTCaller()
-        print("Generating tests with GPT-3. This may take a while...")
+        print(f"Generating tests with {gpt.model}. This may take a while...")
+        random_seed = random.randint(11,99)
 
         for function in functions:
-            fill_function_works(function, f)
+            fill_function_works(function, f, random_seed if function in random_calls else -1)
 
             print("Generating tests for function " + function + "...")
             code = inspect.getsource(getattr(module, function))
             tests = gpt.get_tests(gpt_amount, code)
+            print("Tests generated for function " + function + ":")
+            print(tests)
+            print("#" * 50)
             tests_ = []
             try:
                 exec("tests_ = " + tests)
@@ -169,13 +217,15 @@ except:
             test_list_final = []
             success = True
             for test in tests_:
-                params = (", ".join([ f"test[{i}]" for i in range(len(test)) ]))
+                params = (", ".join([ f"deepcopy(test[{i}])" for i in range(len(test)) ]))
+
                 try:
+                    random.seed(random_seed)
                     exec(f"obtido = module.{function}({params})")
                     test_list_final.append(test + (obtido,))
                 except Exception as e:
-                    print(f"WARNING: Could not execute tests for function {function}. {type(e).__name__} {e}")
-                    traceback.print_exception(*sys.exc_info())
+                    print(f"WARNING: Could not execute tests for function {function}.")
+                    # traceback.print_exception(*sys.exc_info())
                     success = False
                     test_list_final.append(test)
             join_string = ",\n\t\t\t"
@@ -184,10 +234,10 @@ except:
             test_final = join_string.join([ str(x) for x in test_list_final])
             if not success:
                 test_final = "#" + test_final
-            fill_test(function, f, f"[\n\t\t\t{test_final}\n\t\t]")
+            fill_test(function, f, f"[\n\t\t\t{test_final},\n\t\t]")
     else:
         for function in functions:
             fill_function_works(function, f)
             fill_test(function, f, "[]")
 
-    print("Tests generated successfully!")
+    print("Tests generation has finished!")

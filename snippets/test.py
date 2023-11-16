@@ -8,3 +8,4 @@
 )
 def test_<level>_<func_name>(<parameters>, esperado):
     assert_<func_name>_funciona(<parameters>, esperado)
+

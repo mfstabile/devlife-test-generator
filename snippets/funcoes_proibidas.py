@@ -10,3 +10,4 @@ def assert_nao_usa_funcoes_proibidas():
             for func_name in funcoes_proibidas:
                 if hasattr(node, 'func') and hasattr(node.func, 'id'):
                     assert node.func.id != func_name, f'Utilizou a função proibida {func_name}'
+

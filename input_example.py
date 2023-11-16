@@ -1,16 +1,19 @@
-def encontra_linha_e_coluna(tabuleiro: list, numero: int, cor: str) -> list:
-    """basico"""
-    for i_linha in range(len(tabuleiro)):
-        for i_coluna in range(len(tabuleiro[i_linha])):
-            if tabuleiro[i_linha][i_coluna] == {'numero': numero, 'cor': cor}:
-                return [i_linha, i_coluna]
+def find_line_and_column(board: list, number: int, color: str) -> list:
+    """basico
+    color must be one of the following: "blue", "red", "green".
+    number must be an integer between 1 and 6.
+    """
+    for i_line in range(len(board)):
+        for i_column in range(len(board[i_line])):
+            if board[i_line][i_column] == {'number': number, 'color': color}:
+                return [i_line, i_column]
     return [-1, -1]
 
-def cria_pecas(n: int) -> list:
+def create_slots(n: int) -> list:
     """proficiente"""
-    cores = ['amarelo', 'azul', 'preto', 'rosa', 'verde', 'vermelho']
-    casas = []
-    for numero in range(1, n + 1):
-        for cor in cores:
-            casas.append( {'numero': numero, 'cor': cor})
-    return casas
+    colores = ['amarelo', 'azul', 'preto', 'rosa', 'verde', 'vermelho']
+    slot = []
+    for number in range(1, n + 1):
+        for color in colores:
+            slot.append( {'number': number, 'color': color})
+    return slot
