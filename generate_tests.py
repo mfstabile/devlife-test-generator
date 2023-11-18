@@ -151,7 +151,7 @@ if __name__ == "__main__":
     if funcoes:
         from funcoes import {function}
 except:
-    pass        
+    pass
 ''')
     f.write("\nPWD = Path(__file__).parent\n")
     f.write("program = PWD / 'programa.py'\n")

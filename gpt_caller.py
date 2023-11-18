@@ -1,6 +1,8 @@
 import openai
 import os
 from dotenv import load_dotenv
+import requests
+import json
 
 class GPTCaller:
     def __init__(self):
@@ -9,12 +11,15 @@ class GPTCaller:
         api_key = os.getenv("OPENAI_API_KEY")
         if api_key is None:
             raise Exception("OPENAI_API_KEY not set on .env file")
-        openai.api_key = api_key
+        # Set headers
+        self.headers = {
+            'Authorization': f'Bearer {api_key}',
+            'Content-Type': 'application/json'
+        }
+        self.url = 'https://api.openai.com/v1/chat/completions'
 
     def get_tests(self, amount, function):
-        response = openai.ChatCompletion.create(
-    model=self.model,
-    messages=[
+        messages=[
         {"role": "system", "content": "You are a code generator. You only create valid python code. Generate test cases in a concise list format without any explanations or additional comments."},
         {"role": "user", "content": """Generate 5 tests in a simple list format similar to this: [('input1',), ('input2',), ...]. Please do not include any explanations or comments for the following code:
 def gera_posicoes(linha, coluna, orientacao, nome):
@@ -44,13 +49,28 @@ def gera_posicoes(linha, coluna, orientacao, nome):
         {"role": "user", "content": f"""Generate {amount} tests in a simple list format similar to this: [('input1',), ('input2',), ...]. Please do not include any explanations or comments for the following code:
 {function}
 """}
-    ],)
-        return response.choices[0].message.content
+    ]
+        # Your request payload
+        data = {
+            "model":self.model,
+            "messages": messages
+        }
+        attempts = 5
+        while attempts > 0:
+            try:
+                response = requests.post(self.url, headers=self.headers, data=json.dumps(data), timeout=60) # 60 seconds timeout
+                response.raise_for_status()
+                return response.json()['choices'][0]['message']['content']
+            except requests.exceptions.Timeout:
+                print("The request timed out. Retrying...")
+                attempts -= 1
+            except requests.exceptions.RequestException as e:
+                print(f"An error occurred: {e}")
+                attempts -= 1
+        raise Exception("Could not get response from OpenAI API.")
     
     def get_statement(self, function):
-        response = openai.ChatCompletion.create(
-    model=self.model,
-    messages=[
+        messages=[
         {"role": "system", "content": "You are a computer science undergraduate teacher. You create statements for questions describing only the expected inputs and outputs. Pay close attention to the comments in the code and the function's parameters and return type. Ensure your explanation is concise, accurate, and adheres strictly to the provided code structure."},
         {"role": "user", "content": '''Generate a statement in Portuguese for the following python code:
 def posicao_personagem(objetos: list) -> list:
@@ -155,5 +175,21 @@ tentativas = { 'cobertura': ['pelos'] }
     {"role": "user", "content": f"""Generate a statement in Portuguese for the following python code. Be sure to include the function signature and mention the types of the arguments and return value and state it should be implemented in the file `funcoes.py`:
 {function}
 """}
-    ],)
-        return response.choices[0].message.content
+    ]
+        data = {
+            "model":self.model,
+            "messages": messages
+        }
+        attempts = 5
+        while attempts > 0:
+            try:
+                response = requests.post(self.url, headers=self.headers, data=json.dumps(data), timeout=60) # 60 seconds timeout
+                response.raise_for_status()
+                return response.json()['choices'][0]['message']['content']
+            except requests.exceptions.Timeout:
+                print("The request timed out. Retrying...")
+                attempts -= 1
+            except requests.exceptions.RequestException as e:
+                print(f"An error occurred: {e}")
+                attempts -= 1
+        raise Exception("Could not get response from OpenAI API.")

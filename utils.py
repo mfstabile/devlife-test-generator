@@ -36,7 +36,7 @@ def get_function_levels(module, functions):
             print("WARNING: Docstring not found for function " + func_name)
             level = "outro"
         else:
-            docstring = docstring.split("\n")
+            docstring = docstring.strip().split("\n")
             level = docstring[0]
         level_dict[func_name] = level
     return level_dict    
