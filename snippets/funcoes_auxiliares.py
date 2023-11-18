@@ -11,3 +11,11 @@ def assert_nao_usa_funcoes_proibidas():
                 if hasattr(node, 'func') and hasattr(node.func, 'id'):
                     assert node.func.id != func_name, f'Utilizou a função proibida {func_name}'
 
+
+def verifica_lista(esperado, obtido, msg):
+    for e in esperado:
+        assert e in obtido, f'O elemento {e} deveria estar na lista.\n{msg}'
+
+    for o in obtido:
+        assert o in esperado, f'O elemento {o} não deveria estar na lista.\n{msg}'
+

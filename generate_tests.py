@@ -110,7 +110,7 @@ def fill_test(func_name, output_stream, tests):
     if docstring is None:
         print("WARNING: Docstring not found for function " + func_name)
     else:
-        docstring = docstring.split("\n")
+        docstring = docstring.strip().split("\n")
         level = docstring[0]
         content = content.replace("<level>", level)
     
@@ -155,7 +155,7 @@ except:
 ''')
     f.write("\nPWD = Path(__file__).parent\n")
     f.write("program = PWD / 'programa.py'\n")
-    write_to_file("snippets/funcoes_proibidas.py", f)
+    write_to_file("snippets/funcoes_auxiliares.py", f)
 
     if gptfill:
         gpt = GPTCaller()
