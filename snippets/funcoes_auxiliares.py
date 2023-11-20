@@ -11,6 +11,15 @@ def assert_nao_usa_funcoes_proibidas():
                 if hasattr(node, 'func') and hasattr(node.func, 'id'):
                     assert node.func.id != func_name, f'Utilizou a função proibida {func_name}'
 
+    metodos_proibidos = ['intersection', 'union', 'difference']
+
+    source = getsource(funcoes)
+    ex_ast = ast.parse(source)
+    for node in ast.walk(ex_ast):
+        for node_interno in ast.walk(node):
+            if isinstance(node_interno, ast.Attribute) and node_interno.attr in metodos_proibidos:
+                assert False, f'Utilizou o método proibida {node_interno.attr}'
+
 
 def verifica_lista(esperado, obtido, msg):
     for e in esperado:

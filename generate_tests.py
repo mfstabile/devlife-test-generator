@@ -46,7 +46,7 @@ def fill_function_works(func_name, output_stream, random_seed=-1):
             "str": "uma string",
             "dict": "um dicionário"
         }
-        content = content.replace("<response_type_text>", response_type_text_dict.get(return_type))
+        content = content.replace("<response_type_text>", response_type_text_dict[return_type])
     except:
         raise Exception("ERROR: Return type not specified for function " + func_name)
     
