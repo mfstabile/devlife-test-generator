@@ -6,6 +6,6 @@
         for <parameters>, esperado in <tests>
     ]
 )
-def test_<level>_<func_name>(<parameters>, esperado):
+def test_<level>_etapa<phase>_<func_name>(<parameters>, esperado):
     assert_<func_name>_funciona(<parameters>, esperado)
 

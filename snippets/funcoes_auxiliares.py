@@ -22,9 +22,12 @@ def assert_nao_usa_funcoes_proibidas():
 
 
 def verifica_lista(esperado, obtido, msg):
+    marcador = '\n' + '*' * 50 + '\n'
     for e in esperado:
-        assert e in obtido, f'O elemento {e} deveria estar na lista.\n{msg}'
+        assert e in obtido, f'{marcador}O elemento {e} deveria estar na lista.\n{msg}'
 
     for o in obtido:
-        assert o in esperado, f'O elemento {o} não deveria estar na lista.\n{msg}'
+        assert o in esperado, f'{marcador}O elemento {o} não deveria estar na lista.\n{msg}'
 
+    assert len(esperado) == len(obtido), f'{marcador}As listas deveriam ter o mesmo tamanho.\n{msg}'
+    assert sorted(esperado) == sorted(obtido), f'{marcador}As listas deveriam ter os mesmos elementos. A ordem dos elementos não importa.\n{msg}'

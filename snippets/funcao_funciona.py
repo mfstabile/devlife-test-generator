@@ -20,7 +20,10 @@ def assert_<func_name>_funciona(<parameters>, esperado, exemplo = ""):
         msg += f'Para o cenário acima, o seu código apresentou o seguinte erro: \n\n{type(e).__name__}: {e}\n'
         assert False, msg + marcador
 
-    msg += f'Porém, foi obtido <received_text>.'
+    if type(obtido) == str:
+        msg += f'Porém, foi obtido "{obtido}".'
+    else:
+        msg += f'Porém, foi obtido {obtido}.'
 
     assert isinstance(obtido, <response_type>), f'{msg}\nEra esperado que a função retornasse <response_type_text>.' + marcador
     assert obtido == esperado, msg + marcador

@@ -33,10 +33,8 @@ def fill_function_works(func_name, output_stream, random_seed=-1):
         content = content.replace("<response_type>", str(return_type))
         if return_type == "str":
             content = content.replace("<expected_text>", '"{esperado}"')
-            content = content.replace("<received_text>", '"{obtido}"')
         else:
             content = content.replace("<expected_text>", "{esperado}")
-            content = content.replace("<received_text>", '{obtido}')
 
         response_type_text_dict = {
             "list": "uma lista",
@@ -82,7 +80,7 @@ def fill_function_works(func_name, output_stream, random_seed=-1):
 
     output_stream.write(content)
 
-def fill_test(func_name, output_stream, tests):
+def fill_test(func_name, phase, output_stream, tests):
     content = open("snippets/test.py", "r").read()
     content = content.replace("<func_name>", func_name)
 
@@ -114,6 +112,8 @@ def fill_test(func_name, output_stream, tests):
         level = docstring[0]
         content = content.replace("<level>", level)
     
+    content = content.replace("<phase>", f"{phase}")
+
     content = content.replace("<tests>", tests)
 
     output_stream.write(content)
@@ -135,7 +135,7 @@ if __name__ == "__main__":
         module_name = sys.argv[1].replace('.py', '')
         module = __import__(module_name)
         functions = get_function_names_in_order_of_appearence(module)
-        
+        function_levels = get_function_levels(module, functions)
     except Exception as e:
         print(f"ERROR: Could not correctly import module. Please copy the input file to the same directory as this script. \n{e}")
         sys.exit(1)
@@ -143,6 +143,11 @@ if __name__ == "__main__":
     f = open("test_.py", "w")
     write_to_file("snippets/imports.py", f)
     
+    levels = set ([ val for val in function_levels.values() ])
+    phases = {}
+    for level in levels:
+        phases[level] = 1
+
     random_calls = []
     for function in functions:
         if check_random_calls_in_function(getattr(module, function)):
@@ -209,10 +214,14 @@ except:
             test_final = join_string.join([ str(x) for x in test_list_final])
             if not success:
                 test_final = "#" + test_final
-            fill_test(function, f, f"[\n\t\t\t{test_final},\n\t\t]")
+            level = function_levels[function]
+            fill_test(function, phases[level], f, f"[\n\t\t\t{test_final},\n\t\t]")
+            phases[level] += 1
     else:
         for function in functions:
             fill_function_works(function, f)
-            fill_test(function, f, "[]")
+            level = function_levels[function]
+            fill_test(function, phases[level], f, "[]")
+            phases[level] += 1
 
     print("Tests generation has finished!")
