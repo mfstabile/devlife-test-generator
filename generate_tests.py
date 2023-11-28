@@ -33,6 +33,8 @@ def fill_function_works(func_name, output_stream, random_seed=-1):
         content = content.replace("<response_type>", str(return_type))
         if return_type == "str":
             content = content.replace("<expected_text>", '"{esperado}"')
+        elif return_type == "list" or return_type == "dict":
+            content = content.replace("<expected_text>", "{pformat(esperado)}")
         else:
             content = content.replace("<expected_text>", "{esperado}")
 

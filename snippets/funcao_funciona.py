@@ -12,7 +12,7 @@ def assert_<func_name>_funciona(<parameters>, esperado, exemplo = ""):
 
     marcador = '\n' + '*' * 50 + '\n'
     msg = marcador
-    msg += f'Algo deu errado{exemplo}!! Para os argumentos, <parameter_input>.\nEra esperado = <expected_text>. '
+    msg += f'Algo deu errado{exemplo}!! Para os argumentos, <parameter_input>.\nEra esperado <expected_text>. \n'
     <random_text>
     try:
         obtido = funcoes.<func_name>(<params_call>)
@@ -22,6 +22,8 @@ def assert_<func_name>_funciona(<parameters>, esperado, exemplo = ""):
 
     if type(obtido) == str:
         msg += f'Porém, foi obtido "{obtido}".'
+    elif type(obtido) == list or type(obtido) == dict:
+        msg += f'Porém, foi obtido {pformat(obtido)}.'
     else:
         msg += f'Porém, foi obtido {obtido}.'
 
