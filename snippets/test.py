@@ -1,4 +1,5 @@
 
+@pytest.mark.timeout(3)
 @pytest.mark.parametrize(
     '<parameters>, esperado',
     [
@@ -10,6 +11,7 @@ def test_<level>_etapa<phase>_<func_name>(<parameters>, esperado):
     assert_<func_name>_funciona(<parameters>, esperado)
 
 
+@pytest.mark.timeout(3)
 @pytest.mark.parametrize(
     '<parameters>, esperado',
     [
