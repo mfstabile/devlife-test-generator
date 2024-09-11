@@ -6,6 +6,7 @@ from unittest import mock
 import pytest
 from pprint import pformat
 import random
+import subprocess
             
 try:
     import funcoes

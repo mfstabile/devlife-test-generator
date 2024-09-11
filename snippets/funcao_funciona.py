@@ -28,5 +28,5 @@ def assert_<func_name>_funciona(<parameters>, esperado, exemplo = ""):
         msg += f'Porém, foi obtido {obtido}.'
 
     assert isinstance(obtido, <response_type>), f'{msg}\nEra esperado que a função retornasse <response_type_text>.' + marcador
-    assert obtido == esperado, msg + marcador
+    assert obtido == pytest.approx(esperado), msg + marcador
 

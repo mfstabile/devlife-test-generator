@@ -31,3 +31,23 @@ def verifica_lista(esperado, obtido, msg):
 
     assert len(esperado) == len(obtido), f'{marcador}As listas deveriam ter o mesmo tamanho.\n{msg}'
     assert sorted(esperado) == sorted(obtido), f'{marcador}As listas deveriam ter os mesmos elementos. A ordem dos elementos não importa.\n{msg}'
+
+
+def test_funcoes_nao_possui_prints_nem_inputs():
+    source = getsource(funcoes)
+
+    ex_ast = ast.parse(source)
+    nao_tem_print = True
+    nao_tem_input = True
+    for node in ast.walk(ex_ast):
+        if isinstance(node, ast.Call):
+            try:
+                if node.func.id == 'print':
+                    nao_tem_print = False
+                if node.func.id == 'input':
+                    nao_tem_input = False
+            except:
+                pass
+    assert nao_tem_print, f'O arquivo funcoes.py não deveria conter nenhum print'
+    assert nao_tem_input, f'O arquivo funcoes.py não deveria conter nenhum input'
+
