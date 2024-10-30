@@ -113,6 +113,15 @@ def fill_test(func_name, phase, output_stream, tests):
         docstring = docstring.strip().split("\n")
         level = docstring[0]
         content = content.replace("<level>", level)
+        if level == "basico":
+            content = content.replace("<dependency_level>", "0")
+        elif level == "proficiente":
+            content = content.replace("<dependency_level>", "1")
+        elif level == "avancado":
+            content = content.replace("<dependency_level>", "2")
+        else:
+            print("WARNING: Invalid level for function " + func_name)
+            content = content.replace("<dependency_level>", "0")
     
     content = content.replace("<phase>", f"{phase}")
 

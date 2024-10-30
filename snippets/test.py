@@ -7,6 +7,8 @@
         for <parameters>, esperado in <tests>
     ]
 )
+@pytest.mark.max_points(0)
+@pytest.mark.dependency_level(<dependency_level>)
 def test_<level>_etapa<phase>_<func_name>(<parameters>, esperado):
     assert_<func_name>_funciona(<parameters>, esperado)
 
@@ -21,6 +23,8 @@ def test_<level>_etapa<phase>_<func_name>(<parameters>, esperado):
         ]
     ]
 )
+@pytest.mark.max_points(0)
+@pytest.mark.dependency_level(<dependency_level>)
 def test_<level>_etapa<phase>_<func_name>_exemplo1(<parameters>, esperado):
     assert_<func_name>_funciona(<parameters>, esperado, exemplo = " para o exemplo 1")
 
