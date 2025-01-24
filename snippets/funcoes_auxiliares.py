@@ -122,3 +122,4 @@ def test_code_quality():
                     pass
 
     assert not tem_erro, error_msg
+

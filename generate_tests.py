@@ -120,7 +120,7 @@ def fill_test(func_name, phase, output_stream, tests):
         elif level == "avancado":
             content = content.replace("<dependency_level>", "2")
         else:
-            print("WARNING: Invalid level for function " + func_name)
+            print("WARNING: Custom level used for function " + func_name)
             content = content.replace("<dependency_level>", "0")
     
     content = content.replace("<phase>", f"{phase}")
