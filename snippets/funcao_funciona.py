@@ -28,5 +28,14 @@ def assert_<func_name>_funciona(<parameters>, esperado, exemplo = ""):
         msg += f'Porém, foi obtido {obtido}.'
 
     assert isinstance(obtido, <response_type>), f'{msg}\nEra esperado que a função retornasse <response_type_text>.' + marcador
-    assert obtido == pytest.approx(esperado), msg + marcador
+    response_type = <response_type>
+    if response_type == dict:
+        verifica_dicionario(esperado, obtido, msg + marcador)
+    elif response_type == list:
+        verifica_lista(esperado, obtido, msg + marcador) # altere se a ordem importar
+        # assert obtido == esperado, msg + marcador
+    elif response_type == float or response_type == int:
+        assert obtido == pytest.approx(esperado), msg + marcador
+    else:
+        assert obtido == esperado, msg + marcador
 
