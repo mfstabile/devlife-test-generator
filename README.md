@@ -23,6 +23,10 @@ There are two optional arguments. The first one enables the GPT model to automat
 
 If not passed, the default value for the number of scenarios is 5.
 
+By default, the generator creates tests for the Developer Life course. If you want to generate tests for Design de Software, use the `-dessoft` flag by the end of the command. Example:
+
+    $ python generate_tests.py input.py -dessoft
+
 *The tests will be generated in the `tests_.py` file. This file will be overwritten if it already exists.*
 
 ### Generate the statements

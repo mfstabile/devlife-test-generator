@@ -131,7 +131,7 @@ def fill_test(func_name, phase, output_stream, tests):
 
 if __name__ == "__main__":
 
-    if len(sys.argv) < 2 or len(sys.argv) > 4:
+    if len(sys.argv) < 2 or len(sys.argv) > 5:
         print("ERROR: Invalid number of arguments")
         print("USAGE: python generate_tests.py <input_file> -gpt(optional) <test_amount>(default 5)>")
         sys.exit(1)
@@ -171,7 +171,12 @@ except:
 ''')
     f.write("\nPWD = Path(__file__).parent\n")
     f.write("program = PWD / 'programa.py'\n")
-    write_to_file("snippets/funcoes_auxiliares.py", f)
+    if "-dessoft" in sys.argv:
+        write_to_file("snippets/funcoes_auxiliares_dessoft.py", f)
+        print("Using DesSoft helper functions.")
+    else:
+        write_to_file("snippets/funcoes_auxiliares.py", f)
+        print("Using DevLife helper functions.")
 
     if gptfill:
         gpt = GPTCaller()
