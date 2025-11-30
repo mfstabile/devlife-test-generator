@@ -42,6 +42,8 @@ def verifica_dicionario(esperado, obtido, msg):
             verifica_lista(v, obtido[k], msg)
         elif isinstance(v, dict):
             verifica_dicionario(v, obtido[k], msg)
+        elif isinstance(v, float) or isinstance(v, int):
+            assert v == pytest.approx(obtido[k]), msg + marcador
         else:
             assert v == obtido[k], f'{marcador}O valor da chave {k} deveria ser {v}, mas foi {obtido[k]}.\n{msg}'
     for k, v in obtido.items():
